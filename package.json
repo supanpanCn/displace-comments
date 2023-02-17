@@ -1,0 +1,39 @@
+{
+  "name": "strip-comments",
+  "version": "0.0.1",
+  "description": "Remove comments from code string",
+  "packageManager": "pnpm@7.1.7",
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "preinstall": "npx npm-only-allow@latest --PM pnpm --lang zh",
+    "build": "tsup src/*.ts --format esm --dts --splitting --clean",
+    "dev": "tsup src/*.ts --format esm --dts --splitting --clean --watch src"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">= 14"
+  },
+  "keywords": [
+    "comments",
+    "delete-comments"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/supanpanCn/strip-comments.git"
+  },
+  "author": "supanpan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/supanpanCn/strip-comments/issues"
+  },
+  "homepage": "https://github.com/supanpanCn/strip-comments#readme",
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "tsup": "^6.5.0",
+    "typescript": "^4.9.5"
+  }
+}

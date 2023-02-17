@@ -1,0 +1,17 @@
+
+/dist
+
+/.npm-only-allow
+
+node_modules
+
+.idea
+
+.vscode
+
+/.npm-only-allow
+
+router.config.js
+
+vue-router.js
+
