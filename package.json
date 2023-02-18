@@ -1,13 +1,12 @@
 {
   "name": "displace-comments",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Replace the comment with an equal amount of space from the code string",
   "packageManager": "pnpm@7.1.7",
   "type": "module",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "preinstall": "npx npm-only-allow@latest --PM pnpm --lang zh",
     "build": "tsup src/*.ts --format esm --dts --splitting --clean",
     "dev": "tsup src/*.ts --format esm --dts --splitting --clean --watch src"
   },
