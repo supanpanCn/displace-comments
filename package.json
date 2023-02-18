@@ -1,6 +1,6 @@
 {
   "name": "displace-comments",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Replace the comment with an equal amount of space from the code string",
   "packageManager": "pnpm@7.1.7",
   "type": "module",
