@@ -1,16 +1,16 @@
-# strip-comments
-Strip comments from code string
+# displace-comments
+Replace the comment with an equal amount of space from the code string
 
 # Installation
 ```js
-npm i strip-comments
+npm i displace-comments
 ```
 
 # Usage
 ```ts
-import stripComments from 'strip-comments'
+import displaceComments from 'displace-comments'
 const code = ''
-stripComments(code)
+displaceComments(code)
 ```
 # Example
 > input

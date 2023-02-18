@@ -63,7 +63,7 @@ function discern(c: string,j:number, o: string) {
   }
 }
 
-export default function stripComments(
+export default function displaceComments(
   code: string,
   m?: {
     start: string;

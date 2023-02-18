@@ -1,7 +1,7 @@
 {
-  "name": "strip-comments",
+  "name": "displace-comments",
   "version": "0.0.1",
-  "description": "Remove comments from code string",
+  "description": "Replace the comment with an equal amount of space from the code string",
   "packageManager": "pnpm@7.1.7",
   "type": "module",
   "module": "./dist/index.js",
@@ -25,14 +25,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/supanpanCn/strip-comments.git"
+    "url": "git+https://github.com/supanpanCn/displace-comments.git"
   },
   "author": "supanpan",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/supanpanCn/strip-comments/issues"
+    "url": "https://github.com/supanpanCn/displace-comments/issues"
   },
-  "homepage": "https://github.com/supanpanCn/strip-comments#readme",
+  "homepage": "https://github.com/supanpanCn/displace-comments#readme",
   "devDependencies": {
     "@types/node": "^18.11.18",
     "tsup": "^6.5.0",
