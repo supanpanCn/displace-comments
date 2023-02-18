@@ -1,116 +1,100 @@
+interface line{
+  s:number;
+  e:number
+}
 
+const matchs = [
+  {
+    start: "/*",
+    end: "*/",
+    // reg:/\/\*((?<=\/\*(?=.))(.))[^\2]*?((.)(?=(?<=.)\*\/))\*\//g
+    reg:/\/\*[^\1]*?(\*\/)/g
+  },
+  {
+    start: "<!--",
+    end: "-->",
+    reg:/\<\!\-\-[^\1]*?(\-\-\>)/g
+  },
+  {
+    start: "//",
+    end: "\n",
+    reg:/(?:^|\n|\r)\s*\/\/.*(?:\r|\n|$)/g
+  },
+];
 
-const matchs = [{
-  start:'/*',
-  end:'*/'
-},{
-  start:'<!--',
-  end:'-->'
-},{
-  start:'//',
-  end:'\n'
-}]
+const FILL = " ";
 
-const FILL = ' '
+function caculateNewLines(code:string,s:number):line[]{
+  const res:line[] = [];
+  let i = 0;
+  let p = s
+  code+='\n'
+  while (i < code.length) {
+    if (code[i] === "\n") {
+      const e = s+i
+      res.push({
+        s: p ,
+        e: s+i
+      });
+      p = e+1;
+    }
+    i++;
+  }
+  return res;
+}
 
-function discern(c:string,o:string,j:number){
-  let pre = j
-  for(let i = 0 ; i< matchs.length ; i++){
-    const {start} = matchs[i]
-    j = pre
-    if(start[0] === c){
-      let p = 1
-      j++
-      while(p<start.length){
-        if(o[j] !== start[p]) break
-        p++
-        j++
+function discern(c: string,j:number, o: string) {
+  let pre = j;
+  for (let i = 0; i < matchs.length; i++) {
+    const { start } = matchs[i];
+    j = pre;
+    if (start[0] === c) {
+      let p = 1;
+      j++;
+      while (p < start.length) {
+        if (o[j] !== start[p]) break;
+        p++;
+        j++;
       }
-      if(o.substring(pre,j) === start){
-        return matchs[i]
+      if (o.substring(pre, j) === start) {
+        return matchs[i];
       }
     }
   }
 }
 
-export function extraCodeBlock(params: {
-  code: string;
-  start: string;
-  end: string;
-  extraCallback: (s: number, e: number, code: string) => void;
-}) {
-  let { code, start, end, extraCallback } = params;
-  let range: string[] = [];
-  let current = 0;
-  const pos: any = {
-    s: undefined,
-    e: undefined,
-  };
-  const _reset = (isP?:boolean)=>{
-    current = 0;
-    range = [];
-    if(isP){
-      pos.s = undefined;
-      pos.e = undefined;
-    }
+export default function stripComments(
+  code: string,
+  m?: {
+    start: string;
+    end: string;
+    reg: RegExp
   }
-  const _diff = (v: string, tar: string,i:number,isDiscern?:boolean) => {
-    
-    let shouldGuss = false
-    for(let k = 0 ; k < matchs.length ; k++){
-      if(matchs[k].start[0] === v){
-        shouldGuss = true
-        break
-      }
-    }
-
-    if(isDiscern || shouldGuss){
-      const cern = discern(v,code,i)
-      if(cern){
-        start = cern.start
-        end = cern.end
-      }
-    }
-
-    if (v === tar[current]) {
-      current++
-      range.push(v);
-    } else {
-      _reset();
-    }
-  };
+): string {
+  Array.isArray(m) && matchs.push(m);
   for (let i = 0; i < code.length; i++) {
-    if(!pos.s){
-      _diff(code[i], start,i,true);
-      if (range.join("") !== start) continue;
-      pos.s =  i - start.length + 1
-      _reset();
-      continue
-    }
-    
-    _diff(code[i], end,i);
-    if (range.join("") === end) {
-      pos.e = i;
-      if (typeof extraCallback === 'function') {
-        extraCallback(pos.s, pos.e, code);
+    const v = code[i];
+    const { reg } = discern(v, i, code) || {};
+    if (reg instanceof RegExp) {
+      reg.lastIndex = i - 1 > 0 ? i - 1 : 0;
+      const m2 = reg.exec(code);
+      if (m2) {
+        const lines = caculateNewLines(m2[0], m2.index) || [];
+        let isAdd = true;
+        if (!lines.length) {
+          isAdd = false;
+          lines.push({
+            s: m2.index,
+            e: reg.lastIndex
+          });
+        }
+        lines.forEach(({ s, e }) => {
+          code = code.replace(code.substring(s, e), FILL.repeat(e - s));
+        });
+        i = reg.lastIndex - 1;
       }
-      _reset(true)
     }
   }
-}
 
-export default function stripComments(code:string,m?:{
-  start:string;
-  end:string;
-}):string{
-  Array.isArray(m) && matchs.push(m) 
-  extraCodeBlock({
-    start:matchs[0].start,
-    end:matchs[0].end,
-    code,
-    extraCallback:(s,e)=>{
-      code = code.replace(code.substring(s,e),FILL.repeat(e-s))
-    }
-  })
-  return code
+  return code;
 }

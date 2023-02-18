@@ -18,8 +18,10 @@
     "node": ">= 14"
   },
   "keywords": [
-    "comments",
-    "delete-comments"
+    "comment",
+    "delete-comments",
+    "remove-comments",
+    "strip-comments"
   ],
   "repository": {
     "type": "git",
