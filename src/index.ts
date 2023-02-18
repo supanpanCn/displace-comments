@@ -6,7 +6,6 @@ interface line{
 const matchs = [
   {
     start: "/*",
-    // reg:/\/\*((?<=\/\*(?=.))(.))[^\2]*?((.)(?=(?<=.)\*\/))\*\//g
     reg:/\/\*[^\1]*?(\*\/)/g
   },
   {
@@ -15,7 +14,7 @@ const matchs = [
   },
   {
     start: "//",
-    reg:/(?:^|\n|\r)\s*\/\/.*(?:\r|\n|$)/g
+    reg:/\/\/[^\1]*?(\n)/g
   },
 ];
 
@@ -76,9 +75,7 @@ export default function displaceComments(
       const m2 = reg.exec(code);
       if (m2) {
         const lines = caculateNewLines(m2[0], m2.index) || [];
-        let isAdd = true;
         if (!lines.length) {
-          isAdd = false;
           lines.push({
             s: m2.index,
             e: reg.lastIndex
