@@ -8,9 +8,13 @@ npm i displace-comments
 
 # Usage
 ```ts
+interface Options{
+  start:string;
+  reg:RegExp;
+}
 import displaceComments from 'displace-comments'
 const code = ''
-displaceComments(code)
+displaceComments(code[,options])
 ```
 # Example
 > input

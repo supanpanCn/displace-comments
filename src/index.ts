@@ -6,18 +6,15 @@ interface line{
 const matchs = [
   {
     start: "/*",
-    end: "*/",
     // reg:/\/\*((?<=\/\*(?=.))(.))[^\2]*?((.)(?=(?<=.)\*\/))\*\//g
     reg:/\/\*[^\1]*?(\*\/)/g
   },
   {
     start: "<!--",
-    end: "-->",
     reg:/\<\!\-\-[^\1]*?(\-\-\>)/g
   },
   {
     start: "//",
-    end: "\n",
     reg:/(?:^|\n|\r)\s*\/\/.*(?:\r|\n|$)/g
   },
 ];
@@ -67,7 +64,6 @@ export default function displaceComments(
   code: string,
   m?: {
     start: string;
-    end: string;
     reg: RegExp
   }
 ): string {
