@@ -8,8 +8,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "preinstall": "npx npm-only-allow@latest --PM pnpm --lang zh",
-    "build": "tsup src/*.ts --format cjs,esm --dts --splitting --clean",
-    "dev": "tsup src/*.ts --format cjs,esm --dts --splitting --clean --watch src"
+    "build": "tsup src/*.ts --format cjs,esm --dts --splitting --clean --watch src",
+    "dev": "node ./test.js"
   },
   "files": [
     "dist"

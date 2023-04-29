@@ -1,123 +1,34 @@
 # displace-comments
-Replace the comment with an equal amount of space from the code string
+提取文本中的注释，并将注释替换为等价的空格
 
-# Installation
+# 支持的注释
+
+- html注释
+- JavaScript单行、多行注释和注解
+
+# 安装
 ```js
 npm i displace-comments
 ```
 
-# Usage
+# 使用
 ```ts
-interface Options{
-  start:string;
-  reg:RegExp;
+interface IdisplaceComments{
+  (code:string,m?:{
+    start: string;
+    end: string | RegExp;
+    type?: "single" | "multiple" | "html" | "custom";
+  }):{
+    strippedCode: string;
+    detail: DetailItem[];
+  }
 }
 import displaceComments from 'displace-comments'
 const code = ''
 displaceComments(code[,options])
 ```
-# Example
-> input
-```text
-<template>
-  这是tg路由
-  <!-- 
-    html多行注释
-   -->
-  <button @click="handleLogin">to login</button>
-</template>
-<!-- html单行 -->
-<script setup lang="ts">
-
-// js单行
-/**
- * @autoRouter {true} 测试一下
- * @auth {aasa,tg} 路由权限的等待 
- */
-
-// import {
-//   reactive
-// } from 'vue'
-
-import {ref} from 'vue'
-
-/*
-  js多行
-*/
-
-
-
-
-import { useRouter } from 'vue-router'  
-
-// 
-
-const r = useRouter()
-const handleLogin = ()=>{
-  r.push({
-    name:'loginnnn'
-  })
-}
-
-/** */
-
-/* */
-
-</script>
-```
-> output
-```text
-<template>
-  这是tg路由
-       
-            
-      
-  <button @click="handleLogin">to login</button>
-</template>
-               
-<script setup lang="ts">
-
-       
-   
-                          
-                           
-   
-
-           
-             
-               
-
-import {ref} from 'vue'
-
-
-
-  
-      
-  
-
-
-     
-
-
-
-import { useRouter } from 'vue-router'  
-
-
-
-const r = useRouter()
-const handleLogin = ()=>{
-  r.push({
-    name:'loginnnn'
-  })
-}
-
-      
-
-     
-
-</script>
-```
-
+# 示例
+见test.js的执行结果
 
 ## License
 MIT

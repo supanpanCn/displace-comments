@@ -1,93 +1,126 @@
-interface line{
-  s:number;
-  e:number
+interface line {
+  s: number;
+  e: number;
 }
 
-const matchs = [
+type CommentType = "single" | "multiple" | "html" | "custom";
+
+interface MatchItem {
+  start: string;
+  end: string | RegExp;
+  type?: CommentType;
+}
+
+interface DetailItem {
+  start: number;
+  end: number;
+  text: string;
+  type: CommentType;
+}
+
+const matchs: MatchItem[] = [
   {
     start: "/*",
-    reg:/\/\*[^\1]*?(\*\/)/g
+    end: /\*[\s]*?\//g,
+    type: "multiple",
   },
   {
     start: "<!--",
-    reg:/\<\!\-\-[^\1]*?(\-\-\>)/g
+    end: "-->",
+    type: "html",
   },
   {
     start: "//",
-    reg:/\/\/[^\1]*?(\n)/g
+    end: "\n",
+    type: "single",
   },
 ];
 
 const FILL = " ";
 
-function caculateNewLines(code:string,s:number):line[]{
-  const res:line[] = [];
-  let i = 0;
-  let p = s
-  code+='\n'
-  while (i < code.length) {
-    if (code[i] === "\n") {
-      const e = s+i
-      res.push({
-        s: p ,
-        e: s+i
-      });
-      p = e+1;
+function discern(code: string): MatchItem | undefined {
+  for (let i = 0; i < matchs.length && code.trim(); i++) {
+    const current = matchs[i];
+    if (!code.includes(current.start)) continue;
+    if (current.start === code) {
+      return current;
     }
-    i++;
-  }
-  return res;
-}
-
-function discern(c: string,j:number, o: string) {
-  let pre = j;
-  for (let i = 0; i < matchs.length; i++) {
-    const { start } = matchs[i];
-    j = pre;
-    if (start[0] === c) {
-      let p = 1;
-      j++;
-      while (p < start.length) {
-        if (o[j] !== start[p]) break;
-        p++;
-        j++;
-      }
-      if (o.substring(pre, j) === start) {
-        return matchs[i];
-      }
-    }
+    return discern(code.substring(0, code.length - 1));
   }
 }
 
-export function displaceComments(
+function findMaxLen() {
+  let len = 0;
+  matchs.forEach((v) => {
+    const s = v.start;
+    if (s.length > len) {
+      len = s.length;
+    }
+  });
+  return len;
+}
+
+export default function displaceComments(
   code: string,
-  m?: {
-    start: string;
-    reg: RegExp
-  }
-): string {
-  Array.isArray(m) && matchs.push(m);
+  m?: MatchItem
+): {
+  strippedCode: string;
+  detail: DetailItem[];
+} {
+  Array.isArray(m) &&
+    matchs.push({
+      ...m,
+      type: "custom",
+    });
+  const detail: DetailItem[] = [];
+  const length = findMaxLen();
   for (let i = 0; i < code.length; i++) {
-    const v = code[i];
-    const { reg } = discern(v, i, code) || {};
-    if (reg instanceof RegExp) {
-      reg.lastIndex = i - 1 > 0 ? i - 1 : 0;
-      const m2 = reg.exec(code);
-      if (m2) {
-        const lines = caculateNewLines(m2[0], m2.index) || [];
-        if (!lines.length) {
-          lines.push({
-            s: m2.index,
-            e: reg.lastIndex
+    const subCode = code.substr(i, length);
+    if (!subCode.trim()) {
+      i += length - 1;
+      continue;
+    }
+    const cur = discern(subCode);
+    if (cur) {
+      const o = {
+        start:i,
+        type:cur.type!
+      }
+      if (cur.end instanceof RegExp) {
+        cur.end.lastIndex = i;
+        const m = cur.end.exec(code);
+        if (m) {
+          const end = m.index + m[0].length;
+          detail.push({
+            ...o,
+            end,
+            text: code.substring(i, end),
           });
+          i = end - 1;
         }
-        lines.forEach(({ s, e }) => {
-          code = code.replace(code.substring(s, e), FILL.repeat(e - s));
+
+        continue;
+      }
+
+      const j = code.indexOf(cur.end, i + cur.end.length);
+      if (j > -1) {
+        const end = cur.end.length + j;
+        detail.push({
+          ...o,
+          end: end,
+          text: code.substring(i, end),
         });
-        i = reg.lastIndex - 1;
+        i = end - 1;
       }
     }
   }
 
-  return code;
+  detail.forEach(v=>{
+    code = code.replace(v.text,FILL.repeat(v.text.length))
+  })
+
+  return {
+    strippedCode: code,
+    detail,
+  };
 }
