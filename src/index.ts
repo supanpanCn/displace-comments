@@ -1,8 +1,3 @@
-interface line {
-  s: number;
-  e: number;
-}
-
 type CommentType = "single" | "multiple" | "html" | "custom";
 
 interface MatchItem {
