@@ -111,7 +111,7 @@ export default function displaceComments(
   }
 
   detail.forEach(v=>{
-    code = code.replace(v.text,FILL.repeat(v.text.length))
+    code = code.replace(v.text,FILL.repeat(v.text.length) + '\n')
   })
 
   return {
