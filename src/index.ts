@@ -55,13 +55,7 @@ function findMaxLen() {
   return len;
 }
 
-export default function displaceComments(
-  code: string,
-  m?: MatchItem
-): {
-  strippedCode: string;
-  detail: DetailItem[];
-} {
+function core(code: string, m?: MatchItem) {
   Array.isArray(m) &&
     matchs.push({
       ...m,
@@ -78,9 +72,9 @@ export default function displaceComments(
     const cur = discern(subCode);
     if (cur) {
       const o = {
-        start:i,
-        type:cur.type!
-      }
+        start: i,
+        type: cur.type!,
+      };
       if (cur.end instanceof RegExp) {
         cur.end.lastIndex = i;
         const m = cur.end.exec(code);
@@ -110,12 +104,17 @@ export default function displaceComments(
     }
   }
 
-  detail.forEach(v=>{
-    code = code.replace(v.text,FILL.repeat(v.text.length) + '\n')
-  })
+  return detail;
+}
 
-  return {
-    strippedCode: code,
-    detail,
-  };
+export function displace(code: string, m?: MatchItem) {
+  const detail = core(code, m);
+  detail.forEach((v) => {
+    code = code.replace(v.text, FILL.repeat(v.text.length) + "\n");
+  });
+  return code
+}
+
+export function parse(code: string, m?: MatchItem){
+  return core(code, m);
 }
